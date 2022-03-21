@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+
+    <changeSet id="1" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="customers"/>
+            </not>
+        </preConditions>
+        <sql>
+            create table customers
+            (
+                customer_id Integer,
+                part_id Integer not null,
+                login varchar(32) not null,
+                password varchar(32) not null,
+                active boolean not null
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="2" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists primaryKeyName="pk_customers" tableName="customers" />
+            </not>
+            <columnExists tableName="customers" columnName="customer_id"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE customers
+                ADD CONSTRAINT pk_customers PRIMARY KEY (customer_id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="3" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="customers" columnNames="login"/>
+            </not>
+            <columnExists tableName="customers" columnName="login"/>
+        </preConditions>
+        <sql>
+            create UNIQUE index i_customers_login on customers (login);
+        </sql>
+    </changeSet>
+
+    <changeSet id="4" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="parts"/>
+            </not>
+        </preConditions>
+        <sql>
+            create table parts
+            (
+                part_id Integer,
+                name varchar(32) not null,
+                code varchar(20) not null
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="5" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists primaryKeyName="pk_parts" tableName="parts" />
+            </not>
+            <columnExists tableName="parts" columnName="part_id"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE parts
+                ADD CONSTRAINT pk_parts PRIMARY KEY (part_id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="6" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="parts" columnNames="name"/>
+            </not>
+            <columnExists tableName="parts" columnName="name"/>
+        </preConditions>
+        <sql>
+            create UNIQUE index i_parts_name on parts (name);
+        </sql>
+    </changeSet>
+
+    <changeSet id="7" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="parts" columnNames="code"/>
+            </not>
+            <columnExists tableName="parts" columnName="code"/>
+        </preConditions>
+        <sql>
+            create UNIQUE index i_parts_code on parts (code);
+        </sql>
+    </changeSet>
+
+    <changeSet id="8" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="parts"/>
+            <columnExists tableName="parts" columnName="part_id"/>
+            <columnExists tableName="parts" columnName="name"/>
+            <columnExists tableName="parts" columnName="code"/>
+        </preConditions>
+        <sql>
+            INSERT INTO parts
+                (part_id, name, code)
+                VALUES
+                    (1, 'ADMIN', 'ADMIN');
+        </sql>
+    </changeSet>
+
+    <changeSet id="9" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="parts"/>
+            <columnExists tableName="parts" columnName="part_id"/>
+            <columnExists tableName="parts" columnName="name"/>
+            <columnExists tableName="parts" columnName="code"/>
+        </preConditions>
+        <sql>
+            INSERT INTO parts
+                (part_id, name, code)
+                VALUES
+                    (2, 'USER', 'USER');
+        </sql>
+    </changeSet>
+
+    <changeSet id="10" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_customers_parts"/>
+            </not>
+            <columnExists tableName="customers" columnName="part_id"/>
+            <columnExists tableName="parts" columnName="part_id"/>
+        </preConditions>
+        <sql>
+            alter table customers
+                ADD CONSTRAINT fk_customers_parts
+                    FOREIGN KEY (part_id)
+                        REFERENCES parts (part_id);
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="11" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="products"/>
+            </not>
+        </preConditions>
+        <sql>
+            create table products
+            (
+                product_id bigint,
+                name varchar(200) not null,
+                description varchar(500) not null,
+                price Integer not null,
+                quantity Integer not null
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="12" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <primaryKeyExists primaryKeyName="pk_products" tableName="products" />
+            </not>
+            <columnExists tableName="products" columnName="product_id"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE products
+                ADD CONSTRAINT pk_products PRIMARY KEY (product_id);
+        </sql>
+    </changeSet>
+
+    <changeSet id="13" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists tableName="products" columnNames="name"/>
+            </not>
+            <columnExists tableName="products" columnName="name"/>
+        </preConditions>
+        <sql>
+            create UNIQUE index i_products_name on products (name);
+        </sql>
+    </changeSet>
+
+    <changeSet id="14" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <sequenceExists sequenceName="sequence_product_id"/>
+            </not>
+        </preConditions>
+        <sql>
+            create sequence sequence_product_id start with 1;
+        </sql>
+    </changeSet>
+
+    <changeSet id="15" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="customers"/>
+            <columnExists tableName="customers" columnName="customer_id"/>
+            <columnExists tableName="customers" columnName="part_id"/>
+            <columnExists tableName="customers" columnName="login"/>
+            <columnExists tableName="customers" columnName="password"/>
+            <columnExists tableName="customers" columnName="active"/>
+        </preConditions>
+        <sql>
+            INSERT INTO customers
+                (customer_id, part_id, login, password, active)
+                VALUES
+                    (1, 1, 'admin', 'admin', true);
+        </sql>
+    </changeSet>
+
+    <changeSet id="16" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="customers"/>
+            <columnExists tableName="customers" columnName="customer_id"/>
+            <columnExists tableName="customers" columnName="part_id"/>
+            <columnExists tableName="customers" columnName="login"/>
+            <columnExists tableName="customers" columnName="password"/>
+            <columnExists tableName="customers" columnName="active"/>
+        </preConditions>
+        <sql>
+            INSERT INTO customers
+                (customer_id, part_id, login, password, active)
+                VALUES
+                    (2, 2, 'active', 'active', true);
+        </sql>
+    </changeSet>
+
+    <changeSet id="17" author="Sonin">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="customers"/>
+            <columnExists tableName="customers" columnName="customer_id"/>
+            <columnExists tableName="customers" columnName="part_id"/>
+            <columnExists tableName="customers" columnName="login"/>
+            <columnExists tableName="customers" columnName="password"/>
+            <columnExists tableName="customers" columnName="active"/>
+        </preConditions>
+        <sql>
+            INSERT INTO customers
+                (customer_id, part_id, login, password, active)
+                VALUES
+                    (3, 2, 'disable', 'disable', false);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
