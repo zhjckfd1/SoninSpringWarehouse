@@ -28,16 +28,12 @@ public class ProductController {
         this.productService = productService;
     }
 
-    //Блокируем доступ по пути только? Тогда нужно путь поменять. (post админу, get пользователю, а путь один сейчас)
-    //вроде в .antMatchers можем тип запроса передать (HttpMethod.POST)
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void create(@RequestBody ProductDto productDto) {
         productService.addProduct(productDto);
     }
 
-    //в теории, можно и так, но как правильнее?
-    //value = "/getAll"
     @GetMapping
     public ResponseEntity<List<ProductDto>> readAll() {
         final List<ProductDto> products = productService.getAll();

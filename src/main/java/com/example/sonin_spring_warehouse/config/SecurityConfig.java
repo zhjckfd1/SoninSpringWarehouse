@@ -1,44 +1,39 @@
 package com.example.sonin_spring_warehouse.config;
 
-import org.springframework.context.annotation.Bean;
+import com.example.sonin_spring_warehouse.repository.CustomerRepository;
+import com.example.sonin_spring_warehouse.service.impl.MyUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final CustomerRepository customerRepository;
+
+    @Autowired
+    public SecurityConfig(CustomerRepository customerRepository){
+        this.customerRepository = customerRepository;
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-            .passwordEncoder(passwordEncoder())
-            .withUser("user")
-            .password(passwordEncoder().encode("user"))
-            .roles("ADMIN","USER");
-        //.password("{noop}password")
-
-        //попробовать передать "{bcrypt}user" в .encode
+        auth.userDetailsService(
+                new MyUserDetailsService(customerRepository));
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-            .anyRequest().fullyAuthenticated()
+            .antMatchers(HttpMethod.GET).hasAnyRole("USER", "ADMIN")
+            //.antMatchers(HttpMethod.GET).fullyAuthenticated()
+            .anyRequest().hasRole("ADMIN")
             .and()
             .httpBasic()
             .and()
             .csrf().disable();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        //{noop}  - не шифрует
-        //в д.с. стабильно как BCryptPasswordEncoder?
-
-        //как в д.с. default расшифровку добавить, если возвращается PasswordEncoder?
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }

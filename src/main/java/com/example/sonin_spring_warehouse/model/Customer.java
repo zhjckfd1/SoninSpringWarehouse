@@ -31,11 +31,11 @@ public class Customer {
         this.id = id;
     }
 
-    public Part getRole() {
+    public Part getPart() {
         return part;
     }
 
-    public void setRole(Part part) {
+    public void setPart(Part part) {
         this.part = part;
     }
 
@@ -55,7 +55,7 @@ public class Customer {
         this.password = password;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return active;
     }
 

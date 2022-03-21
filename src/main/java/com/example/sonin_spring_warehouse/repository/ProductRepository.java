@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends CrudRepository<Product, Long> {
-    List<Product> findAll();
+    List<Product> findAll();  //использовать стандартную реализацию и заносить элементы в List в сервисе (через forEach)?
     Optional<Product> findByName(String name);
     List<Product> findByNameIgnoreCaseContaining(String partOfName);
     List<Product> findByNameIgnoreCaseContainingAndQuantityGreaterThan(String partOfName, int q);
