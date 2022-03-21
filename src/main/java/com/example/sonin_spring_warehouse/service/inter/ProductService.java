@@ -1,5 +1,6 @@
 package com.example.sonin_spring_warehouse.service.inter;
 
+import com.example.sonin_spring_warehouse.dto.PriceDto;
 import com.example.sonin_spring_warehouse.dto.ProductDto;
 import com.example.sonin_spring_warehouse.dto.ProductUpdateDto;
 import java.util.List;
@@ -18,11 +19,17 @@ public interface ProductService {
 
     ProductDto getProductByName(String name);
 
-    List<ProductDto> getProductByPartOfName(String part);
+    List<ProductDto> getProductsByPartOfNameIgnoreCase(String part);
 
-    //получение товаров в ценовом диапазоне (поиск товара по цене)?
+    List<ProductDto> getProductsByPartOfNameIgnoreCaseIfProductPresent(String part);
 
-    //поиск товаров в наличии (quantity>0)?
+    List<ProductDto> getProductsByPriceBetween(PriceDto priceDto);
 
-    //удаление отсутствующих товаров (quantity=0)?
+    List<ProductDto> getProductsByPriceBetweenIfProductPresent(PriceDto priceDto);
+
+    List<ProductDto> getProductsByQuantityGreaterThanEqual(int q);
+
+    List<ProductDto> getProductsIfProductPresent();
+
+    List<ProductDto> getProductsIfProductNotPresent();
 }

@@ -10,5 +10,11 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepository extends CrudRepository<Product, Long> {
     List<Product> findAll();
     Optional<Product> findByName(String name);
-    List<Product> findByNameContaining(String partOfName);
+    List<Product> findByNameIgnoreCaseContaining(String partOfName);
+    List<Product> findByNameIgnoreCaseContainingAndQuantityGreaterThan(String partOfName, int q);
+    List<Product> findByPriceBetween(int min, int max);
+    List<Product> findByQuantityGreaterThanAndPriceBetween(int q, int min, int max);
+    List<Product> findByQuantityGreaterThan(int q);
+    List<Product> findByQuantityGreaterThanEqual(int q);
+    List<Product> findByQuantityEquals (int q);
 }

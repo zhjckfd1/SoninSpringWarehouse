@@ -1,6 +1,7 @@
 package com.example.sonin_spring_warehouse.service.impl;
 
 import com.example.sonin_spring_warehouse.Constants;
+import com.example.sonin_spring_warehouse.dto.PriceDto;
 import com.example.sonin_spring_warehouse.dto.ProductDto;
 import com.example.sonin_spring_warehouse.dto.ProductUpdateDto;
 import com.example.sonin_spring_warehouse.exception.ProductAlreadyExistsException;
@@ -87,8 +88,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public List<ProductDto> getProductByPartOfName(String part) {
-        return productRepository.findByNameContaining(part)
+    public List<ProductDto> getProductsByPartOfNameIgnoreCase(String part) {
+        return productRepository.findByNameIgnoreCaseContaining(part)
+                                .stream()
+                                .map(productDtoMapping::mapToDto)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByPartOfNameIgnoreCaseIfProductPresent(String part) {
+        return productRepository.findByNameIgnoreCaseContainingAndQuantityGreaterThan(part, 0)
                                 .stream()
                                 .map(productDtoMapping::mapToDto)
                                 .collect(Collectors.toList());
@@ -103,4 +113,50 @@ public class ProductServiceImpl implements ProductService {
         if (itog >= 0) product.setQuantity(itog);
         else throw new ProductQuantityNotFoundException(Constants.CURRENT_QUANTITY_LEFT + product.getQuantity() + Constants.CURRENT_QUANTITY_RIGHT);
     }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByPriceBetween(PriceDto priceDto) {
+        return productRepository.findByPriceBetween(priceDto.getMin(), priceDto.getMax())
+                                .stream()
+                                .map(productDtoMapping::mapToDto)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByPriceBetweenIfProductPresent(PriceDto priceDto) {
+        return productRepository.findByQuantityGreaterThanAndPriceBetween(0, priceDto.getMin(), priceDto.getMax())
+                                .stream()
+                                .map(productDtoMapping::mapToDto)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsByQuantityGreaterThanEqual(int q) {
+        return productRepository.findByQuantityGreaterThanEqual(q)
+                                .stream()
+                                .map(productDtoMapping::mapToDto)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsIfProductPresent() {
+        return productRepository.findByQuantityGreaterThan(0)
+                                .stream()
+                                .map(productDtoMapping::mapToDto)
+                                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> getProductsIfProductNotPresent() {
+        return productRepository.findByQuantityEquals(0)
+                                .stream()
+                                .map(productDtoMapping::mapToDto)
+                                .collect(Collectors.toList());
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.sonin_spring_warehouse.controller;
 
+import com.example.sonin_spring_warehouse.dto.PriceDto;
 import com.example.sonin_spring_warehouse.dto.ProductDto;
 import com.example.sonin_spring_warehouse.dto.ProductUpdateDto;
 import com.example.sonin_spring_warehouse.service.inter.ProductService;
@@ -57,10 +58,17 @@ public class ProductController {
         return new ResponseEntity<>(productDto, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/findByPartOfName/{part}")
+    @GetMapping(value = "/findByPartOfNameIgnoreCase/{part}")
     public ResponseEntity<List<ProductDto>> readByPartOfName(
             @PathVariable(name = "part") String part) {
-        final List<ProductDto> products = productService.getProductByPartOfName(part);
+        final List<ProductDto> products = productService.getProductsByPartOfNameIgnoreCase(part);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/findByPartOfNameIgnoreCaseIfProductPresent/{part}")
+    public ResponseEntity<List<ProductDto>> readByPartOfNameIgnoreCaseIfProductPresent(
+            @PathVariable(name = "part") String part) {
+        final List<ProductDto> products = productService.getProductsByPartOfNameIgnoreCaseIfProductPresent(part);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
@@ -78,5 +86,38 @@ public class ProductController {
             @PathVariable(name = "id") Long productId,
             @PathVariable(name = "quantity") Integer quantity) {
         productService.changeQuantity(productId, quantity);
+    }
+
+    @GetMapping(value = "/findProductsByPriceBetween")
+    public ResponseEntity<List<ProductDto>> readByPriceBetween(
+            @RequestBody PriceDto priceDto) {
+        final List<ProductDto> products = productService.getProductsByPriceBetween(priceDto);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/findProductsByPriceBetweenIfProductPresent")
+    public ResponseEntity<List<ProductDto>> readByPriceBetweenIfProductPresent(
+            @RequestBody PriceDto priceDto) {
+        final List<ProductDto> products = productService.getProductsByPriceBetweenIfProductPresent(priceDto);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/findProductsByQuantityGreaterThanEqual/{quantity}")
+    public ResponseEntity<List<ProductDto>> readByQuantityGreaterThanEqual(
+            @PathVariable(name = "quantity") Integer quantity) {
+        final List<ProductDto> products = productService.getProductsByQuantityGreaterThanEqual(quantity);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/findProductsByQuantityIfProductPresent")
+    public ResponseEntity<List<ProductDto>> readByQuantityIfProductPresent(){
+        final List<ProductDto> products = productService.getProductsIfProductPresent();
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/findProductsByQuantityIfProductNotPresent")
+    public ResponseEntity<List<ProductDto>> readByQuantityIfProductNotPresent(){
+        final List<ProductDto> products = productService.getProductsIfProductNotPresent();
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 }
