@@ -1,35 +1,34 @@
 package com.example.sonin_spring_warehouse.config;
 
-import com.example.sonin_spring_warehouse.repository.CustomerRepository;
-import com.example.sonin_spring_warehouse.service.impl.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CustomerRepository customerRepository;
+    private final UserDetailsService myUserDetailsService;
 
     @Autowired
-    public SecurityConfig(CustomerRepository customerRepository){
-        this.customerRepository = customerRepository;
+    public SecurityConfig(UserDetailsService myUserDetailsService){
+        this.myUserDetailsService = myUserDetailsService;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(
-                new MyUserDetailsService(customerRepository));
+        auth.userDetailsService(myUserDetailsService)
+            .passwordEncoder(PasswordEncoderFactories.createDelegatingPasswordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
             .antMatchers(HttpMethod.GET).hasAnyRole("USER", "ADMIN")
-            //.antMatchers(HttpMethod.GET).fullyAuthenticated()
             .anyRequest().hasRole("ADMIN")
             .and()
             .httpBasic()

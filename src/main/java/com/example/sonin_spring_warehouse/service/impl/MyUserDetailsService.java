@@ -16,7 +16,6 @@ public class MyUserDetailsService implements UserDetailsService {
 
     private final CustomerRepository customerRepository;
 
-
     @Autowired
     public MyUserDetailsService(CustomerRepository customerRepository){
         this.customerRepository = customerRepository;
